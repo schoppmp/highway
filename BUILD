@@ -21,8 +21,23 @@ config_setting(
 )
 
 config_setting(
-    name = "compiler_msvc",
+    name = "compiler_msvc_actual",
     flag_values = {"@bazel_tools//tools/cpp:compiler": "msvc"},
+)
+
+config_setting(
+    name = "compiler_msvc_cpu",
+    values = {
+        "cpu": "x64_windows",
+    },
+)
+
+selects.config_setting_group(
+    name = "compiler_msvc",
+    match_any = [
+        ":compiler_msvc_actual",
+        ":compiler_msvc_cpu",
+    ],
 )
 
 config_setting(
@@ -312,7 +327,7 @@ HWY_TEST_DEPS = [
                 # gTest triggers this warning (which is enabled by the
                 # extra-semi in COPTS), so we need to disable it here,
                 # but it's still enabled for :hwy.
-                "-Wno-c++98-compat-extra-semi",
+                #"-Wno-c++98-compat-extra-semi",
             ],
             features = select({
                 "@platforms//cpu:riscv64": ["fully_static_link"],
